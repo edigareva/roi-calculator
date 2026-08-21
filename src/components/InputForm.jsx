@@ -2,11 +2,11 @@
 // mode two are shown (Scenario A and Scenario B), each with its own title and color.
 // The currency is chosen once for the whole app, so it lives outside this form.
 
-function InputForm({ values, onChange, currencySymbol, title, accentColor }) {
-  // Keep numbers as numbers; empty input becomes 0 so the math never breaks.
+function InputForm({ values, onChange, currencySymbol, title, accentColor, errors = {} }) {
+  // Keep an empty field empty (so we can flag "required"); otherwise store a number.
   const handleNumber = (field) => (event) => {
     const raw = event.target.value
-    onChange(field, raw === '' ? 0 : Number(raw))
+    onChange(field, raw === '' ? '' : Number(raw))
   }
 
   const handlePeriod = (event) => {
@@ -22,34 +22,34 @@ function InputForm({ values, onChange, currencySymbol, title, accentColor }) {
         </h3>
       )}
 
-      <label className="field">
+      <label className={`field${errors.initialInvestment ? ' has-error' : ''}`}>
         <span>Initial Investment ({currencySymbol})</span>
         <input
           type="number"
-          min="0"
           value={values.initialInvestment}
           onChange={handleNumber('initialInvestment')}
         />
+        {errors.initialInvestment && <span className="field-error">{errors.initialInvestment}</span>}
       </label>
 
-      <label className="field">
+      <label className={`field${errors.monthlyRevenue ? ' has-error' : ''}`}>
         <span>Expected Monthly Revenue ({currencySymbol})</span>
         <input
           type="number"
-          min="0"
           value={values.monthlyRevenue}
           onChange={handleNumber('monthlyRevenue')}
         />
+        {errors.monthlyRevenue && <span className="field-error">{errors.monthlyRevenue}</span>}
       </label>
 
-      <label className="field">
+      <label className={`field${errors.monthlyCosts ? ' has-error' : ''}`}>
         <span>Monthly Operating Costs ({currencySymbol})</span>
         <input
           type="number"
-          min="0"
           value={values.monthlyCosts}
           onChange={handleNumber('monthlyCosts')}
         />
+        {errors.monthlyCosts && <span className="field-error">{errors.monthlyCosts}</span>}
       </label>
 
       <label className="field">

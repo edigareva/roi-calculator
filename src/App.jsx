@@ -4,7 +4,13 @@ import Results from './components/Results'
 import Comparison from './components/Comparison'
 import CashFlowChart from './components/CashFlowChart'
 import BreakdownTable from './components/BreakdownTable'
-import { computeResults, CURRENCIES, SCENARIO_COLORS } from './utils/calculations'
+import {
+  computeResults,
+  validateInputs,
+  toNumbers,
+  CURRENCIES,
+  SCENARIO_COLORS,
+} from './utils/calculations'
 
 const DEFAULT_A = {
   initialInvestment: 100000,
@@ -30,11 +36,19 @@ function App() {
   const changeA = (field, value) => setValuesA((prev) => ({ ...prev, [field]: value }))
   const changeB = (field, value) => setValuesB((prev) => ({ ...prev, [field]: value }))
 
-  const resultsA = useMemo(() => computeResults(valuesA), [valuesA])
-  const resultsB = useMemo(() => computeResults(valuesB), [valuesB])
+  // Validate first; compute from safe numbers so typing never crashes the app.
+  const errorsA = useMemo(() => validateInputs(valuesA), [valuesA])
+  const errorsB = useMemo(() => validateInputs(valuesB), [valuesB])
+  const resultsA = useMemo(() => computeResults(toNumbers(valuesA)), [valuesA])
+  const resultsB = useMemo(() => computeResults(toNumbers(valuesB)), [valuesB])
 
   const compare = mode === 'compare'
   const currencySymbol = CURRENCIES[currency]?.symbol ?? '$'
+
+  const validA = Object.keys(errorsA).length === 0
+  const validB = Object.keys(errorsB).length === 0
+  // In compare mode both scenarios must be valid before we show results.
+  const showResults = compare ? validA && validB : validA
 
   return (
     <div className="app">
@@ -79,6 +93,7 @@ function App() {
               currencySymbol={currencySymbol}
               title="Investment A"
               accentColor={SCENARIO_COLORS.A}
+              errors={errorsA}
             />
             <InputForm
               values={valuesB}
@@ -86,10 +101,16 @@ function App() {
               currencySymbol={currencySymbol}
               title="Investment B"
               accentColor={SCENARIO_COLORS.B}
+              errors={errorsB}
             />
           </>
         ) : (
-          <InputForm values={valuesA} onChange={changeA} currencySymbol={currencySymbol} />
+          <InputForm
+            values={valuesA}
+            onChange={changeA}
+            currencySymbol={currencySymbol}
+            errors={errorsA}
+          />
         )}
       </aside>
 
@@ -103,7 +124,19 @@ function App() {
           </p>
         </header>
 
-        {compare ? (
+        {!showResults ? (
+          <section className="results notice">
+            <span className="notice-icon">⚠️</span>
+            <div>
+              <strong>Please fix the highlighted fields</strong>
+              <p>
+                Check the form on the {compare ? 'left (both investments)' : 'left'}. Every field
+                must be filled in, the initial investment must be greater than 0, and monthly costs
+                cannot be higher than monthly revenue.
+              </p>
+            </div>
+          </section>
+        ) : compare ? (
           <Comparison resultsA={resultsA} resultsB={resultsB} currency={currency} />
         ) : (
           <Results
@@ -114,6 +147,8 @@ function App() {
           />
         )}
 
+        {showResults && (
+        <>
         <CashFlowChart
           seriesA={resultsA.series}
           seriesB={compare ? resultsB.series : undefined}
@@ -144,6 +179,8 @@ function App() {
             <BreakdownTable values={valuesA} series={resultsA.series} currency={currency} />
           )}
         </section>
+        </>
+        )}
       </main>
     </div>
   )

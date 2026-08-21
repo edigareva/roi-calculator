@@ -84,3 +84,49 @@ export function formatPercent(value) {
     maximumFractionDigits: 1,
   })}%`
 }
+
+// A field is "empty" if the user cleared it (empty string) or it isn't a real number.
+function isBlank(value) {
+  return value === '' || value === null || value === undefined || Number.isNaN(Number(value))
+}
+
+// Check the form values and return a { field: message } map. Empty map = all valid.
+// Rules: all fields filled; initial investment > 0; monthly costs cannot exceed revenue.
+export function validateInputs(values) {
+  const errors = {}
+
+  if (isBlank(values.initialInvestment)) {
+    errors.initialInvestment = 'Please enter an initial investment.'
+  } else if (Number(values.initialInvestment) <= 0) {
+    errors.initialInvestment = 'Investment must be greater than 0.'
+  }
+
+  if (isBlank(values.monthlyRevenue)) {
+    errors.monthlyRevenue = 'Please enter the expected monthly revenue.'
+  }
+
+  if (isBlank(values.monthlyCosts)) {
+    errors.monthlyCosts = 'Please enter the monthly operating costs.'
+  }
+
+  // Only compare costs vs. revenue when both are filled in.
+  if (
+    !isBlank(values.monthlyRevenue) &&
+    !isBlank(values.monthlyCosts) &&
+    Number(values.monthlyCosts) > Number(values.monthlyRevenue)
+  ) {
+    errors.monthlyCosts = 'Monthly costs cannot exceed monthly revenue.'
+  }
+
+  return errors
+}
+
+// Convert form values (which may be blank strings while typing) into safe numbers.
+export function toNumbers(values) {
+  return {
+    initialInvestment: Number(values.initialInvestment) || 0,
+    monthlyRevenue: Number(values.monthlyRevenue) || 0,
+    monthlyCosts: Number(values.monthlyCosts) || 0,
+    periodMonths: Number(values.periodMonths) || 12,
+  }
+}
