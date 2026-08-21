@@ -3,6 +3,7 @@ import InputForm from './components/InputForm'
 import Results from './components/Results'
 import Comparison from './components/Comparison'
 import CashFlowChart from './components/CashFlowChart'
+import BreakdownTable from './components/BreakdownTable'
 import { computeResults, CURRENCIES, SCENARIO_COLORS } from './utils/calculations'
 
 const DEFAULT_A = {
@@ -119,6 +120,30 @@ function App() {
           currency={currency}
           compare={compare}
         />
+
+        <section className="chart">
+          <h2 className="panel-title">Monthly Breakdown</h2>
+          {compare ? (
+            <>
+              <BreakdownTable
+                values={valuesA}
+                series={resultsA.series}
+                currency={currency}
+                title="Investment A"
+                accentColor={SCENARIO_COLORS.A}
+              />
+              <BreakdownTable
+                values={valuesB}
+                series={resultsB.series}
+                currency={currency}
+                title="Investment B"
+                accentColor={SCENARIO_COLORS.B}
+              />
+            </>
+          ) : (
+            <BreakdownTable values={valuesA} series={resultsA.series} currency={currency} />
+          )}
+        </section>
       </main>
     </div>
   )
