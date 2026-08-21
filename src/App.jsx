@@ -1,9 +1,10 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import InputForm from './components/InputForm'
 import Results from './components/Results'
 import Comparison from './components/Comparison'
 import CashFlowChart from './components/CashFlowChart'
 import BreakdownTable from './components/BreakdownTable'
+import ExportButton from './components/ExportButton'
 import {
   computeResults,
   validateInputs,
@@ -35,6 +36,9 @@ function App() {
 
   const changeA = (field, value) => setValuesA((prev) => ({ ...prev, [field]: value }))
   const changeB = (field, value) => setValuesB((prev) => ({ ...prev, [field]: value }))
+
+  // The area captured into the PDF (results + chart).
+  const reportRef = useRef(null)
 
   // Validate first; compute from safe numbers so typing never crashes the app.
   const errorsA = useMemo(() => validateInputs(valuesA), [valuesA])
@@ -136,27 +140,32 @@ function App() {
               </p>
             </div>
           </section>
-        ) : compare ? (
-          <Comparison resultsA={resultsA} resultsB={resultsB} currency={currency} />
         ) : (
-          <Results
-            roi={resultsA.roi}
-            payback={resultsA.payback}
-            totalProfit={resultsA.totalProfit}
-            currency={currency}
-          />
-        )}
+          <>
+            {/* Everything inside reportRef is captured into the PDF. */}
+            <div className="report" ref={reportRef}>
+              {compare ? (
+                <Comparison resultsA={resultsA} resultsB={resultsB} currency={currency} />
+              ) : (
+                <Results
+                  roi={resultsA.roi}
+                  payback={resultsA.payback}
+                  totalProfit={resultsA.totalProfit}
+                  currency={currency}
+                />
+              )}
 
-        {showResults && (
-        <>
-        <CashFlowChart
-          seriesA={resultsA.series}
-          seriesB={compare ? resultsB.series : undefined}
-          currency={currency}
-          compare={compare}
-        />
+              <ExportButton targetRef={reportRef} />
 
-        <section className="chart">
+              <CashFlowChart
+                seriesA={resultsA.series}
+                seriesB={compare ? resultsB.series : undefined}
+                currency={currency}
+                compare={compare}
+              />
+            </div>
+
+            <section className="chart">
           <h2 className="panel-title">Monthly Breakdown</h2>
           {compare ? (
             <>
