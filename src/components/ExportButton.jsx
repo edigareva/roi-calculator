@@ -55,11 +55,9 @@ function ExportButton({ targetRef }) {
   }
 
   return (
-    <div className="export-row" data-html2canvas-ignore="true">
-      <button className="export-btn" onClick={handleExport} disabled={busy}>
-        {busy ? 'Generating PDF…' : 'Export to PDF'}
-      </button>
-    </div>
+    <button className="export-btn" onClick={handleExport} disabled={busy}>
+      {busy ? 'Generating PDF…' : 'Export to PDF'}
+    </button>
   )
 }
 

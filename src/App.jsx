@@ -5,6 +5,7 @@ import Comparison from './components/Comparison'
 import CashFlowChart from './components/CashFlowChart'
 import BreakdownTable from './components/BreakdownTable'
 import ExportButton from './components/ExportButton'
+import EmbedButton from './components/EmbedButton'
 import {
   computeResults,
   validateInputs,
@@ -155,7 +156,10 @@ function App() {
                 />
               )}
 
-              <ExportButton targetRef={reportRef} />
+              <div className="export-row" data-html2canvas-ignore="true">
+                <ExportButton targetRef={reportRef} />
+                <EmbedButton />
+              </div>
 
               <CashFlowChart
                 seriesA={resultsA.series}
