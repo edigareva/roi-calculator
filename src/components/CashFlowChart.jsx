@@ -1,5 +1,6 @@
 // The cumulative cash flow line chart. The dashed line at $0 is the break-even point:
-// where the line crosses it, the project has paid back the initial investment.
+// where a line crosses it, that investment has paid back its initial cost.
+// In compare mode a second line (Investment B) is overlaid with a legend.
 import {
   ResponsiveContainer,
   LineChart,
@@ -9,11 +10,9 @@ import {
   CartesianGrid,
   Tooltip,
   ReferenceLine,
+  Legend,
 } from 'recharts'
-import { formatCurrency, CURRENCIES } from '../utils/calculations'
-
-// Theme B (EPAM) accent used for the line.
-const ACCENT = '#3399ff'
+import { formatCurrency, CURRENCIES, SCENARIO_COLORS } from '../utils/calculations'
 
 // Compact axis labels like €120k so the Y axis stays readable.
 function shortMoney(value, symbol) {
@@ -22,8 +21,24 @@ function shortMoney(value, symbol) {
   return `${symbol}${value.toLocaleString('en-US')}`
 }
 
-function CashFlowChart({ data, currency }) {
+// Merge one or two { month, cashFlow } series into rows keyed by month for Recharts.
+function mergeSeries(seriesA, seriesB) {
+  const months = Math.max(seriesA.length, seriesB ? seriesB.length : 0)
+  const rows = []
+  for (let i = 0; i < months; i++) {
+    rows.push({
+      month: i + 1,
+      a: seriesA[i]?.cashFlow,
+      b: seriesB ? seriesB[i]?.cashFlow : undefined,
+    })
+  }
+  return rows
+}
+
+function CashFlowChart({ seriesA, seriesB, currency, compare }) {
   const symbol = CURRENCIES[currency]?.symbol ?? '$'
+  const data = mergeSeries(seriesA, seriesB)
+
   return (
     <section className="chart">
       <h2 className="panel-title">Cumulative Cash Flow</h2>
@@ -38,9 +53,10 @@ function CashFlowChart({ data, currency }) {
             />
             <YAxis tickFormatter={(v) => shortMoney(v, symbol)} tick={{ fontSize: 12 }} width={70} />
             <Tooltip
-              formatter={(value) => [formatCurrency(value, currency), 'Cash Flow']}
+              formatter={(value, name) => [formatCurrency(value, currency), name]}
               labelFormatter={(label) => `Month ${label}`}
             />
+            {compare && <Legend />}
             {/* Break-even line at $0 — dashed gray */}
             <ReferenceLine
               y={0}
@@ -50,12 +66,24 @@ function CashFlowChart({ data, currency }) {
             />
             <Line
               type="monotone"
-              dataKey="cashFlow"
-              stroke={ACCENT}
+              dataKey="a"
+              name={compare ? 'Investment A' : 'Cash Flow'}
+              stroke={SCENARIO_COLORS.A}
               strokeWidth={2.5}
               dot={false}
               activeDot={{ r: 5 }}
             />
+            {compare && (
+              <Line
+                type="monotone"
+                dataKey="b"
+                name="Investment B"
+                stroke={SCENARIO_COLORS.B}
+                strokeWidth={2.5}
+                dot={false}
+                activeDot={{ r: 5 }}
+              />
+            )}
           </LineChart>
         </ResponsiveContainer>
       </div>

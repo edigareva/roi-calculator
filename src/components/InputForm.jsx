@@ -1,9 +1,8 @@
-// The form on the left side. It holds the four inputs the user fills in.
-// It doesn't do any math itself — it just reports changes up to App.jsx.
+// A reusable set of the four ROI inputs. In single mode one is shown; in compare
+// mode two are shown (Scenario A and Scenario B), each with its own title and color.
+// The currency is chosen once for the whole app, so it lives outside this form.
 
-import { CURRENCIES } from '../utils/calculations'
-
-function InputForm({ values, onChange, currency, onCurrencyChange }) {
+function InputForm({ values, onChange, currencySymbol, title, accentColor }) {
   // Keep numbers as numbers; empty input becomes 0 so the math never breaks.
   const handleNumber = (field) => (event) => {
     const raw = event.target.value
@@ -14,26 +13,17 @@ function InputForm({ values, onChange, currency, onCurrencyChange }) {
     onChange('periodMonths', Number(event.target.value))
   }
 
-  // Show the selected currency's symbol in the money field labels.
-  const symbol = CURRENCIES[currency]?.symbol ?? '$'
-
   return (
-    <form className="input-form" onSubmit={(e) => e.preventDefault()}>
-      <h2 className="panel-title">Your Numbers</h2>
+    <div className="input-form">
+      {title && (
+        <h3 className="scenario-title" style={{ color: accentColor }}>
+          <span className="scenario-dot" style={{ background: accentColor }} />
+          {title}
+        </h3>
+      )}
 
       <label className="field">
-        <span>Currency</span>
-        <select value={currency} onChange={(e) => onCurrencyChange(e.target.value)}>
-          {Object.values(CURRENCIES).map((c) => (
-            <option key={c.code} value={c.code}>
-              {c.label}
-            </option>
-          ))}
-        </select>
-      </label>
-
-      <label className="field">
-        <span>Initial Investment ({symbol})</span>
+        <span>Initial Investment ({currencySymbol})</span>
         <input
           type="number"
           min="0"
@@ -43,7 +33,7 @@ function InputForm({ values, onChange, currency, onCurrencyChange }) {
       </label>
 
       <label className="field">
-        <span>Expected Monthly Revenue ({symbol})</span>
+        <span>Expected Monthly Revenue ({currencySymbol})</span>
         <input
           type="number"
           min="0"
@@ -53,7 +43,7 @@ function InputForm({ values, onChange, currency, onCurrencyChange }) {
       </label>
 
       <label className="field">
-        <span>Monthly Operating Costs ({symbol})</span>
+        <span>Monthly Operating Costs ({currencySymbol})</span>
         <input
           type="number"
           min="0"
@@ -70,7 +60,7 @@ function InputForm({ values, onChange, currency, onCurrencyChange }) {
           <option value={36}>36 months</option>
         </select>
       </label>
-    </form>
+    </div>
   )
 }
 

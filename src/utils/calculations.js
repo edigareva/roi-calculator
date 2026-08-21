@@ -53,6 +53,12 @@ export function computeResults({ initialInvestment, monthlyRevenue, monthlyCosts
   }
 }
 
+// Colors used to tell the two comparison scenarios apart (form labels, chart lines, cards).
+export const SCENARIO_COLORS = {
+  A: '#3399ff', // Theme B accent (bright blue)
+  B: '#f59e0b', // amber, high contrast against the blue
+}
+
 // The currencies the user can pick from. Symbol is used for compact chart labels.
 export const CURRENCIES = {
   USD: { code: 'USD', symbol: '$', label: 'US Dollar (USD)' },
