@@ -1,11 +1,208 @@
+/* ---- Theme B: EPAM Brand ----------------------------------------------
+   Accent: #39f (bright blue)   Dark sidebar: #1a1a2e   Modern tech look
+------------------------------------------------------------------------ */
+:root {
+  --accent: #39f;
+  --accent-hover: #57a9ff;
+  --sidebar-bg: #1a1a2e;
+  --sidebar-bg-soft: #24243c;
+  --page-bg: #f4f6fb;
+  --card-bg: #ffffff;
+  --text: #1f2937;
+  --text-muted: #6b7280;
+  --positive: #16a34a;
+  --negative: #dc2626;
+  --border: #e5e7eb;
+  --shadow: 0 4px 16px rgba(17, 24, 39, 0.08);
+}
+
 * {
-  margin: 0;
-  padding: 0;
   box-sizing: border-box;
 }
 
 body {
-  font-family: system-ui, -apple-system, sans-serif;
-  color: #333;
-  background: #fff;
+  margin: 0;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background: var(--page-bg);
+  color: var(--text);
+}
+
+/* Two-column layout, centered, max 1200px. */
+.app {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+  align-items: start;
+}
+
+/* ---- Dark sidebar (holds the form) ---- */
+.sidebar {
+  background: var(--sidebar-bg);
+  border-radius: 16px;
+  padding: 24px;
+  color: #e8eaf2;
+  box-shadow: var(--shadow);
+  position: sticky;
+  top: 24px;
+}
+
+.brand {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.brand-mark {
+  background: var(--accent);
+  color: #0b1020;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  padding: 4px 8px;
+  border-radius: 8px;
+}
+
+.brand-name {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #cdd3e6;
+}
+
+.input-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.panel-title {
+  margin: 0 0 4px;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.sidebar .panel-title {
+  color: #aab2d0;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.78rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.85rem;
+}
+
+.field span {
+  color: #b8bfda;
+}
+
+.field input,
+.field select {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #3a3a5a;
+  background: var(--sidebar-bg-soft);
+  color: #f3f4ff;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.field input:focus,
+.field select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(51, 153, 255, 0.25);
+}
+
+/* ---- Right content column ---- */
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.content-header h1 {
+  margin: 0 0 4px;
+  font-size: 1.6rem;
+}
+
+.content-header p {
+  margin: 0;
+  color: var(--text-muted);
+}
+
+/* ---- Cards (results + chart) ---- */
+.results,
+.chart {
+  background: var(--card-bg);
+  border-radius: 16px;
+  padding: 20px 24px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+}
+
+.results .panel-title,
+.chart .panel-title {
+  margin-bottom: 16px;
+}
+
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.metric-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 18px;
+  border-radius: 12px;
+  background: #f7f9fd;
+  border: 1px solid var(--border);
+}
+
+.metric-label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.metric-value {
+  font-size: 1.7rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.metric-value.positive {
+  color: var(--positive);
+}
+
+.metric-value.negative {
+  color: var(--negative);
+}
+
+/* ---- Chart ---- */
+.chart-canvas {
+  width: 100%;
+  height: 340px;
+}
+
+/* ---- Mobile: single column, form on top ---- */
+@media (max-width: 820px) {
+  .app {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    position: static;
+  }
+
+  .metric-grid {
+    grid-template-columns: 1fr;
+  }
 }
